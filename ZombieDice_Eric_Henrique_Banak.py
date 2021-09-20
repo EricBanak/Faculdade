@@ -8,7 +8,7 @@ Data: 30/08/2021 - Checkpoint do projeto semana 4
 import random
 
 # Criar os dados utilizando uma string (6 verdes, 4 amarelos e 3 vermelhos)
-tubo_default = [
+tubo_default = (
     "CPCTPC",
     "CPCTPC",
     "CPCTPC",
@@ -22,7 +22,7 @@ tubo_default = [
     "TPTCPT",
     "TPTCPT",
     "TPTCPT",
-]
+)
 
 # Entrada para receber a quantidade de jogadores
 print("Seja bem vindo ao Zombie Dice.")
