@@ -2,27 +2,168 @@
 Desenvolvedor: Eric Henrique Banak
 Curso: Análise e Desenvolvimento de Sistemas (EAD)
 Objetivo: Criar o jogo Zombie Dice para projeto da matéria.
-Data: 30/08/2021 - Checkpoint do projeto semana 4
+Data: 20/09/2021 - Entrega do protótipo final do jogo Zombie Dice.
 """
 
 import random
+import sys
 
-# Criar os dados utilizando uma string (6 verdes, 4 amarelos e 3 vermelhos)
-tubo_default = (
-    "CPCTPC",
-    "CPCTPC",
-    "CPCTPC",
-    "CPCTPC",
-    "CPCTPC",
-    "CPCTPC",
-    "TPCTPC",
-    "TPCTPC",
-    "TPCTPC",
-    "TPCTPC",
-    "TPTCPT",
-    "TPTCPT",
-    "TPTCPT",
-)
+
+class Jogador:
+    def __init__(self, nome, nr_cerebros=0, nr_tiros=0, jogador_vivo=True):
+        self.nome = nome
+        self.nr_cerebros = nr_cerebros
+        self.nr_tiros = nr_tiros
+        self.jogador_vivo = jogador_vivo
+
+    def morrer(self):
+        self.jogador_vivo = False
+
+
+def pegar_dado_do_copo():
+
+    global mao_jogador
+    global copo
+
+    # Sorteia os 3 dados do copo
+    while len(mao_jogador) < 3:
+        dado = random.choice(copo)  # Selecionando de forma randômica dado do copo
+
+        # Incluindo dado selecionado na mão do jogador
+        mao_jogador.append(dado)
+        copo.remove(dado)
+
+
+def inicializa_dados_copo():
+    # Criar uma estrutura de dados utilizando uma string (6 verdes, 4 amarelos e 3 vermelhos)
+    copo_default = [
+        ("Verde", ("C", "P", "C", "T", "P", "C")),
+        ("Verde", ("C", "P", "C", "T", "P", "C")),
+        ("Verde", ("C", "P", "C", "T", "P", "C")),
+        ("Verde", ("C", "P", "C", "T", "P", "C")),
+        ("Verde", ("C", "P", "C", "T", "P", "C")),
+        ("Verde", ("C", "P", "C", "T", "P", "C")),
+        ("Amarelo", ("T", "P", "C", "T", "P", "C")),
+        ("Amarelo", ("T", "P", "C", "T", "P", "C")),
+        ("Amarelo", ("T", "P", "C", "T", "P", "C")),
+        ("Amarelo", ("T", "P", "C", "T", "P", "C")),
+        ("Vermelho", ("T", "P", "T", "C", "P", "T")),
+        ("Vermelho", ("T", "P", "T", "C", "P", "T")),
+        ("Vermelho", ("T", "P", "T", "C", "P", "T")),
+    ]
+    return copo_default
+
+
+def lancar_dados():
+
+    global passos
+    global jogador
+    global mao_jogador
+    global lista_mesa
+
+    lista_mesa = []
+
+    # Rotina para jogar e sortear a face dos dados
+    for dado in mao_jogador:
+        face = random.choice(dado[1])
+        # Incrementa as variáveis quando um dos dados é lançado
+        if face == "P":
+            passos = passos + 1
+        elif face == "C":
+            # cerebros = cerebros + 1
+            jogador.nr_cerebros += 1
+        elif face == "T":
+            jogador.nr_tiros += 1
+
+        # Verificar o resultado dos tres dados lancados
+        print(f"Dado { dado[0] }, com a face: { face }, virada para cima.")
+        lista_mesa.append((dado, face))  # Appenda dado e face virada na lista_mesa
+
+    mao_jogador = []
+
+
+def apresentar_pontuacao_turno():
+
+    global passos
+    global jogador
+
+    print("\nNúmero de cérebros: ", jogador.nr_cerebros)
+    print("Número de passos: ", passos)
+    print("Número de tiros: ", jogador.nr_tiros)
+
+
+def printar_os_dados_do_copo():
+
+    global copo
+
+    print(f"\nDados do copo: ({len(copo)})")
+    for dado in copo:
+        print(dado[0])
+
+
+def verifica_jogador_ganhou_ou_perdeu():
+    """
+    Se jogador morreu, retorna False.
+    Se ganhou, printa na tela e finaliza jogo.
+    Se jogador está vivo, retorna True.
+    """
+
+    global jogador
+    global turno_ativo
+    global lista_jogadores
+
+    # Se o jogador tomar 3 tiros ou mais, ele morre
+    if jogador.nr_tiros >= 3:
+        print(f"\nGAME OVER - Jogador {jogador.nome} morto.")
+        jogador.morrer()
+        turno_ativo = False
+
+    elif jogador.nr_cerebros >= 13:
+        print(
+            f"\nParabéns {jogador.nome}, você atingiu {jogador.nr_cerebros} cérebros, você ganhou o jogo!"
+        )
+        sys.exit()
+
+    # Contar numero de jogadores vivos
+    count_jogadores_vivos = 0
+    for row in lista_jogadores:
+        if row.jogador_vivo == True:
+            count_jogadores_vivos += 1
+
+            nome_ultimo_jogador = row.nome
+
+    if count_jogadores_vivos <= 1:
+        print(
+            f"\nParabéns {nome_ultimo_jogador}, como você é o último jogador vivo, você ganhou o jogo.\n"
+        )
+        sys.exit()
+
+    elif jogador.nr_tiros >= 3:
+        # Jogador atual morto
+        return False
+
+    else:
+        # Jogador atual vivo
+        return True
+
+
+def verifica_se_jogador_quer_continuar_turno():
+
+    global jogador
+    global turno_ativo
+
+    # Verificar se o jogador quer continuar o turno
+    opcao = input(f"\nJogador {jogador.nome}, você vai querer continuar? (s/n): \n")
+    while opcao not in ("s", "n"):  # Validacao do input do usuario (s/n)
+        opcao = input(
+            f"\nOpção Inválida. Jogador {jogador.nome}, você vai querer continuar? (s/n): \n"
+        )
+
+    if opcao == "n":
+        turno_ativo = False
+        jogador.nr_tiros = 0  # Reinicia pontuacao de tiros no final do turno
+        print("\nTurno finalizado.")
+
 
 # Entrada para receber a quantidade de jogadores
 print("Seja bem vindo ao Zombie Dice.")
@@ -37,95 +178,68 @@ while num_jogadores < 2:
         input("\nNumero de jogadores incorreto, informe o numero de jogadores: \n")
     )
 
-#lista_jogadores = []
-#nr_jogador = 1
-#while nr_jogador <= num_jogadores:
-#    jogador = {'nome':f'Jogador {nr_jogador}',
-#               'nr_cerebros':0,
-#               'jogador_vivo':True}
-#    lista_jogadores.append(jogador)           
-#    nr_jogador += 1
-#
-#
-#jogo_ativo = True
-#while jogo_ativo:
-#
-#    for jogador
+# Estrutura para armazenar jogadores
+lista_jogadores = []
 
+while len(lista_jogadores) < num_jogadores:
+    nome_jogador = input("Insira o nome do jogador: ")
+    jogador = Jogador(nome=nome_jogador)
+    lista_jogadores.append(jogador)
 
-# Inicializar variáveis para contabilizar tiros, cerebros e passos antes do inicio do turno
-cerebros = 0
-passos = 0
-tiros = 0
+# Inicializar dados do copo
+copo_default = inicializa_dados_copo()
 
-# Iniciar turno
-tubo = tubo_default  # Inicializa tubo com todos os dados
-mao_jogador = []  # Inicializa mao do jogador vazia
+# Loop para validar se o jogo ainda nao foi encerrado
+jogo_ativo = True
+while jogo_ativo:
 
-turno_ativo = True
-jogador_vivo = True
+    # Loop de jogadores
+    for jogador in lista_jogadores:
 
-while turno_ativo and jogador_vivo:
-    print("\nOs dados jogados apresentaram os seguintes resultados:")
+        passos = 0  # Zerar numero de passos no inicio de cada turno
 
-    # Sorteia os 3 dados do tubo
-    while len(mao_jogador) < 3:
-        dado = random.choice(tubo)  # Selecionando de forma randômica dado do tubo
+        # Iniciar turno
+        copo = copo_default.copy()  # Inicializa copo com todos os dados
+        mao_jogador = []  # Inicializa mao do jogador vazia
 
-        # Incluindo dado selecionado na mão do jogador
-        mao_jogador.append(dado)
-        tubo.remove(dado)
+        turno_ativo = True
 
-    lista_mesa = []
+        while turno_ativo and jogador.jogador_vivo:
+            print("\n\n-----------------------------------------")
+            print("\nInício do turno do jogador: ", jogador.nome)
+            print("\nOs dados jogados apresentaram os seguintes resultados:")
 
-    # Rotina para jogar e sortear a face dos dados
-    for dado in mao_jogador:
-        face = random.choice(dado)
+            # Funcao pegar dados e funcao remover dados do copo
+            pegar_dado_do_copo()
 
-        # Incrementa as variáveis quando um dos dados é lançado
-        if face == "P":
-            passos = passos + 1
+            # Lancar dados e printar cor do dado e face sorteada
+            lancar_dados()
 
-        elif face == "C":
-            cerebros = cerebros + 1
+            # Apresentar pontuacao do jogo
+            apresentar_pontuacao_turno()
 
-        elif face == "T":
-            tiros = tiros + 1
+            # Printar dados do copo
+            printar_os_dados_do_copo()
 
-        # Verificar o resultado dos tres dados lancados
-        print(f"{ dado }, com a face: { face }, virada para cima.")
-        lista_mesa.append((dado, face))  # Appenda dado e face virada na lista_mesa
-    mao_jogador = []
+            # Verifica se o jogador ganhou ou perdeu (retorno de valores conforme docstring foi descontinuado, devido a logica de classe de jogador)
+            verifica_jogador_ganhou_ou_perdeu()
 
-    # Se o jogador tomar 3 tiros ou mais, ele perde o jogo
-    if tiros >= 3:
-        print("\nGAME OVER - Jogador morto.")
-        jogador_vivo = False
-        continue
+            # Se o jogador esta vivo, possibilita continuar o jogo, se nao,
+            # vai para o proximo turno do proximo jogador.
+            if jogador.jogador_vivo == False:
+                continue
 
-    if cerebros >= 13:
-        print("Parabens, voce ganhou o jogo!")
-        continue
-    
-    # Apos jogar, os dados de face "Cerebro" e "Tiros" sao devolvidos 
-    # ao tubo, e os dados da face "Passos" voltam para a mao do jogador.
-    for item in lista_mesa:
-        dado = item[0]  # Extrai informacao do dado da lista_mesa
-        face = item[1]  # Extrai face virada do dado da lista_mesa
+            # Apos jogar, os dados de face "Cerebro" e "Tiros" sao devolvidos
+            # ao copo, e os dados da face "Passos" voltam para a mao do jogador
+            for item in lista_mesa:
+                dado = item[0]  # Extrai informacao do dado da lista_mesa
+                face = item[1]  # Extrai face virada do dado da lista_mesa
 
-        if face in ('C', 'T'):
-            tubo.append(dado)
-        
-        elif face == 'P':
-            mao_jogador.append(dado)
-    lista_mesa = []
+                if face in ("C", "T"):
+                    copo.append(dado)
 
-    # Verificar se o jogador quer continuar o turno
-    opcao = input("\nJogador, você vai querer continuar? (s/n): \n")
-    while opcao not in ("s", "n"):  # Validacao do input do usuario (s/n)
-        opcao = input("\nOpção Inválida, você vai querer continuar? (s/n): \n")
+                elif face == "P":
+                    mao_jogador.append(dado)
+            lista_mesa = []
 
-    if opcao == "n":
-        turno_ativo = False
-        tiros = 0  # Zera número de tiros por conta do final do turno
-        print("\nTurno finalizado.")
+            verifica_se_jogador_quer_continuar_turno()
