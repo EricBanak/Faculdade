@@ -1,3 +1,11 @@
+"""
+Desenvolvedor: Eric Henrique Banak e Jefferson III
+Curso: Sistemas de Informação - Noturno
+Objetivo: Desenvolver uma calculadora com menus aninhados, para realizar, com
+persistência de dados, cálculos de funções Exponenciais, do segundo grau, e cálculos com matrizes.
+Data: 23/06/2022 - Entrega do protótipo final da calculadora RMC.
+"""
+
 # imports
 import sys
 import numpy as np
@@ -10,7 +18,6 @@ def main():
     input_menu = None
 
     while input_menu != "4":
-
         if input_menu not in (None, "1", "2", "3", "4"):
             print("\nOpcão Inválida, digite novamente.\n")
 
@@ -28,19 +35,17 @@ def main():
             calcular_func_exponencial()
         elif input_menu == "3":
             calcular_matriz()
-
         elif input_menu == "4":
             sys.exit()
 
 
-# Funções de segundo grau
+# Funções do segundo grau
 
 
 def calcular_funcao_segundo_grau():
     input_sub_menu = None
 
     while input_sub_menu != "7":
-
         if input_sub_menu not in (None, "1", "2", "3", "4", "5", "6", "7"):
             print("\nOpcão Inválida, digite novamente.\n")
 
@@ -65,16 +70,14 @@ def calcular_funcao_segundo_grau():
             calcular_vertice()
         elif input_sub_menu == "5":
             gerar_grafico_func_segundo_grau()
-
-        # voltar
         elif input_sub_menu == "6":
-            break
+            break  # voltar
         elif input_sub_menu == "7":
             sys.exit()
 
 
 def raizes(a, b, c):
-    D = b**2 - 4 * a * c
+    D = b**2 - 4 * a * c  # cálculo do delta
     x1 = (-b + D ** (1 / 2)) / (2 * a)
     x2 = (-b - D ** (1 / 2)) / (2 * a)
 
@@ -122,7 +125,6 @@ def calcular_funcao_x():
     # achar duas soluções
     solucao1 = (-b - cmath.sqrt(d)) / (2 * a)
     solucao2 = (-b + cmath.sqrt(d)) / (2 * a)
-
     print("As soluções são {0} e {1}".format(solucao1, solucao2))
 
 
@@ -139,11 +141,8 @@ def gerar_grafico_func_segundo_grau():
     a = int(input("Entre com o valor de a (ex: -10): "))
     b = int(input("Entre com o valor de b (ex: 10): "))
 
-    # 100 numeros espaçados igualmente
-    x = np.linspace(a, b, 100)
-
-    # função
-    y = x**2
+    x = np.linspace(a, b, 100)  # 100 numeros espaçados igualmente
+    y = x**2  # função
 
     # setando eixos
     fig = plt.figure()
@@ -162,7 +161,7 @@ def gerar_grafico_func_segundo_grau():
     plt.show()
 
 
-# Funções exponenciais
+# Funções Exponenciais
 
 
 def calcular_func_exponencial():
@@ -200,9 +199,6 @@ def calcular_func_exponencial():
             break
         elif input_sub_menu != "6":
             sys.exit()
-
-
-# criar funcoes
 
 
 def verificar_existencia():
